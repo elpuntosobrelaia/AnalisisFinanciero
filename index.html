@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu Estado Financiero</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-4xl mx-auto py-12 px-6">
+    <h1 class="text-3xl font-bold mb-4">Tu Estado Financiero</h1>
+    <p class="mb-6">Introduce tus datos y descubre tu salud financiera en segundos.</p>
+
+    <form id="financesForm" class="space-y-8">
+      <!-- Ingresos -->
+      <div>
+        <h2 class="text-xl font-semibold mb-2">A. Ingresos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="number" name="ingresoFijo" placeholder="Ingreso mensual fijo" class="p-2 border rounded">
+          <input type="number" name="ingresoVariable" placeholder="Ingreso mensual variable" class="p-2 border rounded">
+          <input type="number" name="ingresoPasivo" placeholder="Ingresos pasivos" class="p-2 border rounded">
+        </div>
+      </div>
+
+      <!-- Gastos -->
+      <div>
+        <h2 class="text-xl font-semibold mb-2">B. Gastos mensuales</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="number" name="gastoVivienda" placeholder="Vivienda" class="p-2 border rounded">
+          <input type="number" name="gastoSuministros" placeholder="Suministros" class="p-2 border rounded">
+          <input type="number" name="gastoAlimentacion" placeholder="Alimentación" class="p-2 border rounded">
+          <input type="number" name="gastoTransporte" placeholder="Transporte" class="p-2 border rounded">
+          <input type="number" name="gastoOtros" placeholder="Otros gastos" class="p-2 border rounded">
+          <input type="number" name="gastoOcio" placeholder="Ocio" class="p-2 border rounded">
+        </div>
+      </div>
+
+      <!-- Activos -->
+      <div>
+        <h2 class="text-xl font-semibold mb-2">C. Activos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="number" name="efectivo" placeholder="Efectivo / cuentas" class="p-2 border rounded">
+          <input type="number" name="depositos" placeholder="Depósitos" class="p-2 border rounded">
+          <input type="number" name="inversiones" placeholder="Inversiones" class="p-2 border rounded">
+          <input type="number" name="vivienda" placeholder="Valor vivienda" class="p-2 border rounded">
+          <input type="number" name="otrosActivos" placeholder="Otros bienes" class="p-2 border rounded">
+        </div>
+      </div>
+
+      <!-- Pasivos -->
+      <div>
+        <h2 class="text-xl font-semibold mb-2">D. Pasivos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="number" name="hipoteca" placeholder="Deuda hipotecaria" class="p-2 border rounded">
+          <input type="number" name="prestamos" placeholder="Préstamos personales" class="p-2 border rounded">
+          <input type="number" name="tarjetas" placeholder="Tarjetas de crédito" class="p-2 border rounded">
+        </div>
+      </div>
+
+      <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Calcular Ratios</button>
+    </form>
+
+    <div id="resultados" class="mt-12"></div>
+  </div>
+
+  <script>
+    document.getElementById('financesForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const f = new FormData(e.target);
+
+      const ingresos = +f.get('ingresoFijo') + +f.get('ingresoVariable') + +f.get('ingresoPasivo');
+      const gastos = +f.get('gastoVivienda') + +f.get('gastoSuministros') + +f.get('gastoAlimentacion') + +f.get('gastoTransporte') + +f.get('gastoOtros') + +f.get('gastoOcio');
+      const activos = +f.get('efectivo') + +f.get('depositos') + +f.get('inversiones') + +f.get('vivienda') + +f.get('otrosActivos');
+      const pasivos = +f.get('hipoteca') + +f.get('prestamos') + +f.get('tarjetas');
+      const inversionMensual = +f.get('inversiones') / 12; // suposición básica
+      const activosLiquidos = +f.get('efectivo') + +f.get('depositos');
+
+      const tasaAhorro = ((ingresos - gastos) / ingresos * 100).toFixed(2);
+      const dti = ((pasivos / ingresos) * 100).toFixed(2);
+      const relacionAP = (activos / pasivos).toFixed(2);
+      const patrimonioNeto = activos - pasivos;
+      const libertadFinanciera = (activosLiquidos / gastos).toFixed(2);
+      const tasaInversion = ((inversionMensual / ingresos) * 100).toFixed(2);
+
+      document.getElementById('resultados').innerHTML = `
+        <h2 class="text-2xl font-bold mb-4">📈 Resultados</h2>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>Tasa de Ahorro:</strong> ${tasaAhorro}%</li>
+          <li><strong>Relación Deuda/Ingreso:</strong> ${dti}%</li>
+          <li><strong>Relación Activos/Pasivos:</strong> ${relacionAP}</li>
+          <li><strong>Patrimonio Neto:</strong> €${patrimonioNeto}</li>
+          <li><strong>Índice de Libertad Financiera:</strong> ${libertadFinanciera} meses</li>
+          <li><strong>Tasa de Inversión:</strong> ${tasaInversion}%</li>
+        </ul>
+      `;
+    });
+  </script>
+</body>
+</html>

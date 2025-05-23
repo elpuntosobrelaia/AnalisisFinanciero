@@ -125,14 +125,16 @@
       }
 
       let puntuacion = 0;
-      puntuacion += ahorro >= 0.2 ? 2 : ahorro >= 0.1 ? 1 : 0;
-      puntuacion += dti <= 0.35 ? 2 : dti <= 0.5 ? 1 : 0;
-      puntuacion += activosPasivos >= 2 ? 2 : activosPasivos >= 1 ? 1 : 0;
-      puntuacion += libertadFinanciera >= 6 ? 2 : libertadFinanciera >= 3 ? 1 : 0;
-      puntuacion += tasaInversion >= 0.1 && tasaInversion <= 0.2 ? 2 : tasaInversion >= 0.05 ? 1 : 0;
-      puntuacion += ingresoSobrePatrimonio <= 0.2 ? 2 : ingresoSobrePatrimonio <= 0.4 ? 1 : 0;
+      puntuacion += ahorro >= 0.2 ? 1 : 0;
+      puntuacion += dti <= 0.35 ? 1 : 0;
+      puntuacion += activosPasivos >= 2 ? 1 : 0;
+      puntuacion += libertadFinanciera >= 6 ? 1 : 0;
+      puntuacion += tasaInversion >= 0.1 && tasaInversion <= 0.2 ? 1 : 0;
+      puntuacion += ratioLiquidez >= 0.5 ? 1 : 0;
+      puntuacion += ingresoSobrePatrimonio <= 0.05 ? 1 : 0;
 
-      const colorNota = puntuacion >= 5 ? 'good' : 'bad';
+      const notaFinal = (puntuacion / 7) * 10;
+      const colorNota = notaFinal >= 5 ? 'good' : 'bad';
 
       document.getElementById('resultados').innerHTML = `
         <h2>Resultados</h2>
@@ -151,9 +153,9 @@
         ${formatRatio(tasaInversion, 0.1, (v, i) => v >= i && v <= 0.2, "Porcentaje de tus ingresos que destinas a invertir para tu futuro.")}</p>
         <p><strong>Ratio de liquidez</strong> (Ideal >0.5):
         ${formatRatio(ratioLiquidez, 0.5, (v, i) => v >= i, "Qué parte de tus pasivos puedes cubrir inmediatamente con tus activos líquidos.")}</p>
-        <p><strong>Ingresos sobre patrimonio</strong> (Ideal <20%):
-        ${formatRatio(ingresoSobrePatrimonio, 0.2, (v, i) => v <= i, "Muestra qué proporción de tu patrimonio representa tu ingreso mensual. Cuanto menor, más saludable.")}</p>
-        <div class="notaFinal ${colorNota}"><strong>Nota global:</strong> ${puntuacion}/12</div>
+        <p><strong>Ingresos sobre patrimonio</strong> (Ideal <5%):
+        ${formatRatio(ingresoSobrePatrimonio, 0.05, (v, i) => v <= i, "Muestra qué proporción de tu patrimonio representa tu ingreso mensual. Cuanto menor, más saludable.")}</p>
+        <div class="notaFinal ${colorNota}"><strong>Nota global:</strong> ${notaFinal.toFixed(1)}/10</div>
       `;
     }
   </script>

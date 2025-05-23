@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tu Estado Financiero</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -99,6 +100,7 @@
     </form>
 
     <div id="resultados"></div>
+    <canvas id="graficoFinanciero" width="400" height="200"></canvas>
   </div>
 
   <script>
@@ -117,11 +119,17 @@
       const libertadFinanciera = activosLiquidos / gastos;
       const tasaInversion = (+document.getElementById('inversiones').value / ingreso);
       const ratioLiquidez = activosLiquidos / pasivos;
-      const ingresoSobrePatrimonio = ingreso / (patrimonio || 1);
+
+      let ingresoSobrePatrimonio = 0;
+      if (patrimonio > 0) {
+        ingresoSobrePatrimonio = ingreso / patrimonio;
+      } else {
+        ingresoSobrePatrimonio = Infinity;
+      }
 
       function formatRatio(value, ideal, comparison, description) {
         const color = comparison(value, ideal) ? 'good' : 'bad';
-        return `<div class="ratio ${color}">${value.toFixed(2)} (Ideal: ${ideal})</div><div class="explanation">${description}</div>`;
+        return `<div class="ratio ${color}">${value === Infinity ? 'N/A' : value.toFixed(2)} (Ideal: ${ideal})</div><div class="explanation">${description}</div>`;
       }
 
       let puntuacion = 0;
@@ -137,6 +145,20 @@
       const colorNota = notaFinal >= 5 ? 'good' : 'bad';
 
       document.getElementById('resultados').innerHTML = `
+        <h2>Resumen Financiero</h2>
+        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; margin-bottom:20px; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr><th>Concepto</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ingresos Totales</td><td>${ingreso.toFixed(2)}</td></tr>
+            <tr><td>Gastos Totales</td><td>${gastos.toFixed(2)}</td></tr>
+            <tr><td>Activos Totales</td><td>${activos.toFixed(2)}</td></tr>
+            <tr><td>Pasivos Totales</td><td>${pasivos.toFixed(2)}</td></tr>
+            <tr><td>Patrimonio Neto</td><td>${patrimonio.toFixed(2)}</td></tr>
+          </tbody>
+        </table>
+
         <h2>Resultados</h2>
         <p><strong>Tasa de ahorro</strong> (Ideal >20%):
         ${formatRatio(ahorro, 0.2, (v, i) => v >= i, "Mide qué porcentaje de tus ingresos puedes ahorrar cada mes.")}</p>
@@ -147,6 +169,7 @@
         <p><strong>Patrimonio neto:</strong>
         <span class="ratio">${patrimonio.toFixed(2)}</span>
         <div class="explanation">Es la diferencia entre tus activos y tus deudas. Muestra tu riqueza neta.</div></p>
+        ${patrimonio <= 0 ? '<p><strong class="bad">Advertencia:</strong> Tu patrimonio neto es negativo o cero. Esto significa que tus deudas superan tus activos.</p>' : ''}
         <p><strong>Índice de libertad financiera</strong> (Ideal >6 meses):
         ${formatRatio(libertadFinanciera, 6, (v, i) => v >= i, "Cuántos meses podrías mantener tu nivel de vida actual sin ingresos.")}</p>
         <p><strong>Tasa de inversión</strong> (Ideal 10–20%):
@@ -157,6 +180,33 @@
         ${formatRatio(ingresoSobrePatrimonio, 0.05, (v, i) => v <= i, "Muestra qué proporción de tu patrimonio representa tu ingreso mensual. Cuanto menor, más saludable.")}</p>
         <div class="notaFinal ${colorNota}"><strong>Nota global:</strong> ${notaFinal.toFixed(1)}/10</div>
       `;
+
+      const ctx = document.getElementById('graficoFinanciero').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Ingresos', 'Gastos', 'Activos', 'Pasivos', 'Patrimonio Neto'],
+          datasets: [{
+            label: 'Valores Financieros',
+            data: [ingreso, gastos, activos, pasivos, patrimonio],
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)',
+              'rgba(153, 102, 255, 0.6)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
     }
   </script>
 </body>

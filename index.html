@@ -108,14 +108,16 @@
       const activos = +document.getElementById('efectivo').value + +document.getElementById('depositos').value + +document.getElementById('inversiones').value + +document.getElementById('valorVivienda').value + +document.getElementById('otrosBienes').value;
       const pasivos = +document.getElementById('hipoteca').value + +document.getElementById('otrasDeudas').value + +document.getElementById('tarjetas').value;
       const activosLiquidos = +document.getElementById('efectivo').value + +document.getElementById('depositos').value;
+      const pagosDeudaMensuales = +document.getElementById('hipoteca').value + +document.getElementById('otrasDeudas').value + +document.getElementById('tarjetas').value;
 
       const ahorro = (ingreso - gastos) / ingreso;
-      const dti = gastos / ingreso;
+      const dti = pagosDeudaMensuales / ingreso;
       const activosPasivos = activos / pasivos;
       const patrimonio = activos - pasivos;
       const libertadFinanciera = activosLiquidos / gastos;
       const tasaInversion = (+document.getElementById('inversiones').value / ingreso);
       const ratioLiquidez = activosLiquidos / pasivos;
+      const ingresoSobrePatrimonio = ingreso / (patrimonio || 1);
 
       function formatRatio(value, ideal, comparison, description) {
         const color = comparison(value, ideal) ? 'good' : 'bad';
@@ -128,6 +130,7 @@
       puntuacion += activosPasivos >= 2 ? 2 : activosPasivos >= 1 ? 1 : 0;
       puntuacion += libertadFinanciera >= 6 ? 2 : libertadFinanciera >= 3 ? 1 : 0;
       puntuacion += tasaInversion >= 0.1 && tasaInversion <= 0.2 ? 2 : tasaInversion >= 0.05 ? 1 : 0;
+      puntuacion += ingresoSobrePatrimonio <= 0.2 ? 2 : ingresoSobrePatrimonio <= 0.4 ? 1 : 0;
 
       const colorNota = puntuacion >= 5 ? 'good' : 'bad';
 
@@ -136,7 +139,7 @@
         <p><strong>Tasa de ahorro</strong> (Ideal >20%):
         ${formatRatio(ahorro, 0.2, (v, i) => v >= i, "Mide qué porcentaje de tus ingresos puedes ahorrar cada mes.")}</p>
         <p><strong>Relación deuda/ingreso (DTI)</strong> (Ideal <35%):
-        ${formatRatio(dti, 0.35, (v, i) => v <= i, "Indica qué parte de tus ingresos se destina al pago de deudas.")}</p>
+        ${formatRatio(dti, 0.35, (v, i) => v <= i, "Indica qué parte de tus ingresos se destina al pago de deudas mensuales.")}</p>
         <p><strong>Relación activos/pasivos</strong> (Ideal >2):
         ${formatRatio(activosPasivos, 2, (v, i) => v >= i, "Compara todo lo que tienes (activos) frente a lo que debes (pasivos).")}</p>
         <p><strong>Patrimonio neto:</strong>
@@ -148,7 +151,9 @@
         ${formatRatio(tasaInversion, 0.1, (v, i) => v >= i && v <= 0.2, "Porcentaje de tus ingresos que destinas a invertir para tu futuro.")}</p>
         <p><strong>Ratio de liquidez</strong> (Ideal >0.5):
         ${formatRatio(ratioLiquidez, 0.5, (v, i) => v >= i, "Qué parte de tus pasivos puedes cubrir inmediatamente con tus activos líquidos.")}</p>
-        <div class="notaFinal ${colorNota}"><strong>Nota global:</strong> ${puntuacion}/10</div>
+        <p><strong>Ingresos sobre patrimonio</strong> (Ideal <20%):
+        ${formatRatio(ingresoSobrePatrimonio, 0.2, (v, i) => v <= i, "Muestra qué proporción de tu patrimonio representa tu ingreso mensual. Cuanto menor, más saludable.")}</p>
+        <div class="notaFinal ${colorNota}"><strong>Nota global:</strong> ${puntuacion}/12</div>
       `;
     }
   </script>

@@ -29,6 +29,11 @@
     .bad {
       color: red;
     }
+    .explanation {
+      font-style: italic;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -74,7 +79,7 @@
       const activos = +document.getElementById('efectivo').value + +document.getElementById('depositos').value + +document.getElementById('inversiones').value + +document.getElementById('valorVivienda').value + +document.getElementById('otrosBienes').value;
       const pasivos = +document.getElementById('hipoteca').value + +document.getElementById('otrasDeudas').value + +document.getElementById('tarjetas').value;
       const activosLiquidos = +document.getElementById('efectivo').value + +document.getElementById('depositos').value;
-      
+
       const ahorro = (ingreso - gastos) / ingreso;
       const dti = gastos / ingreso;
       const activosPasivos = activos / pasivos;
@@ -82,19 +87,26 @@
       const libertadFinanciera = activosLiquidos / gastos;
       const tasaInversion = (+document.getElementById('inversiones').value / ingreso);
 
-      function formatRatio(value, ideal, comparison) {
+      function formatRatio(value, ideal, comparison, description) {
         const color = comparison(value, ideal) ? 'good' : 'bad';
-        return `<div class="ratio ${color}">${value.toFixed(2)} (Ideal: ${ideal})</div>`;
+        return `<div class="ratio ${color}">${value.toFixed(2)} (Ideal: ${ideal})</div><div class="explanation">${description}</div>`;
       }
 
       document.getElementById('resultados').innerHTML = `
         <h2>Resultados</h2>
-        <p><strong>Tasa de ahorro</strong> (Ideal >20%): ${formatRatio(ahorro, 0.2, (v, i) => v >= i)}</p>
-        <p><strong>Relación deuda/ingreso (DTI)</strong> (Ideal <35%): ${formatRatio(dti, 0.35, (v, i) => v <= i)}</p>
-        <p><strong>Relación activos/pasivos</strong> (Ideal >2): ${formatRatio(activosPasivos, 2, (v, i) => v >= i)}</p>
-        <p><strong>Patrimonio neto:</strong> <span class="ratio">${patrimonio.toFixed(2)}</span></p>
-        <p><strong>Índice de libertad financiera</strong> (Ideal >6 meses): ${formatRatio(libertadFinanciera, 6, (v, i) => v >= i)}</p>
-        <p><strong>Tasa de inversión</strong> (Ideal 10–20%): ${formatRatio(tasaInversion, 0.1, (v, i) => v >= i && v <= 0.2)}</p>
+        <p><strong>Tasa de ahorro</strong> (Ideal >20%):
+        ${formatRatio(ahorro, 0.2, (v, i) => v >= i, "Mide qué porcentaje de tus ingresos puedes ahorrar cada mes.")}</p>
+        <p><strong>Relación deuda/ingreso (DTI)</strong> (Ideal <35%):
+        ${formatRatio(dti, 0.35, (v, i) => v <= i, "Indica qué parte de tus ingresos se destina al pago de deudas.")}</p>
+        <p><strong>Relación activos/pasivos</strong> (Ideal >2):
+        ${formatRatio(activosPasivos, 2, (v, i) => v >= i, "Compara todo lo que tienes (activos) frente a lo que debes (pasivos).")}</p>
+        <p><strong>Patrimonio neto:</strong>
+        <span class="ratio">${patrimonio.toFixed(2)}</span>
+        <div class="explanation">Es la diferencia entre tus activos y tus deudas. Muestra tu riqueza neta.</div></p>
+        <p><strong>Índice de libertad financiera</strong> (Ideal >6 meses):
+        ${formatRatio(libertadFinanciera, 6, (v, i) => v >= i, "Cuántos meses podrías mantener tu nivel de vida actual sin ingresos.")}</p>
+        <p><strong>Tasa de inversión</strong> (Ideal 10–20%):
+        ${formatRatio(tasaInversion, 0.1, (v, i) => v >= i && v <= 0.2, "Porcentaje de tus ingresos que destinas a invertir para tu futuro.")}</p>
       `;
     }
   </script>

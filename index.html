@@ -6,21 +6,43 @@
   <title>Tu Estado Financiero</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
     }
-    h2 {
-      margin-top: 40px;
+    .container {
+      max-width: 800px;
+      background-color: #fff;
+      margin: auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
     }
     label {
       display: block;
       margin-top: 10px;
     }
     input {
+      width: 100%;
+      padding: 8px;
       margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
     }
     .ratio {
-      margin-top: 20px;
+      margin-top: 10px;
       font-weight: bold;
     }
     .good {
@@ -34,43 +56,50 @@
       font-size: 0.9em;
       margin-bottom: 10px;
     }
+    .notaFinal {
+      font-size: 1.5em;
+      text-align: center;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Tu Estado Financiero</h1>
-  <p>Introduce tus datos y descubre tu salud financiera en segundos.</p>
+  <div class="container">
+    <h1>Tu Estado Financiero</h1>
+    <p>Introduce tus datos y descubre tu salud financiera en segundos.</p>
 
-  <form id="finanzasForm">
-    <h2>Ingresos</h2>
-    <label>Ingreso mensual fijo: <input type="number" id="ingresoFijo" required></label>
-    <label>Ingreso mensual variable: <input type="number" id="ingresoVariable"></label>
-    <label>Ingresos pasivos: <input type="number" id="ingresosPasivos"></label>
+    <form id="finanzasForm">
+      <h2>Ingresos</h2>
+      <label>Ingreso mensual fijo: <input type="number" id="ingresoFijo" required></label>
+      <label>Ingreso mensual variable: <input type="number" id="ingresoVariable"></label>
+      <label>Ingresos pasivos: <input type="number" id="ingresosPasivos"></label>
 
-    <h2>Gastos mensuales</h2>
-    <label>Vivienda: <input type="number" id="vivienda"></label>
-    <label>Suministros: <input type="number" id="suministros"></label>
-    <label>Alimentación: <input type="number" id="alimentacion"></label>
-    <label>Transporte: <input type="number" id="transporte"></label>
-    <label>Otros gastos fijos: <input type="number" id="otrosGastos"></label>
-    <label>Ocio / gastos variables: <input type="number" id="ocio"></label>
+      <h2>Gastos mensuales</h2>
+      <label>Vivienda: <input type="number" id="vivienda"></label>
+      <label>Suministros: <input type="number" id="suministros"></label>
+      <label>Alimentación: <input type="number" id="alimentacion"></label>
+      <label>Transporte: <input type="number" id="transporte"></label>
+      <label>Otros gastos fijos: <input type="number" id="otrosGastos"></label>
+      <label>Ocio / gastos variables: <input type="number" id="ocio"></label>
 
-    <h2>Activos</h2>
-    <label>Efectivo / cuentas corrientes: <input type="number" id="efectivo"></label>
-    <label>Depósitos: <input type="number" id="depositos"></label>
-    <label>Inversiones: <input type="number" id="inversiones"></label>
-    <label>Valor de vivienda: <input type="number" id="valorVivienda"></label>
-    <label>Otros bienes: <input type="number" id="otrosBienes"></label>
+      <h2>Activos</h2>
+      <label>Efectivo / cuentas corrientes: <input type="number" id="efectivo"></label>
+      <label>Depósitos: <input type="number" id="depositos"></label>
+      <label>Inversiones: <input type="number" id="inversiones"></label>
+      <label>Valor de vivienda: <input type="number" id="valorVivienda"></label>
+      <label>Otros bienes: <input type="number" id="otrosBienes"></label>
 
-    <h2>Pasivos</h2>
-    <label>Deuda hipotecaria: <input type="number" id="hipoteca"></label>
-    <label>Otras deudas: <input type="number" id="otrasDeudas"></label>
-    <label>Tarjetas de crédito: <input type="number" id="tarjetas"></label>
+      <h2>Pasivos</h2>
+      <label>Deuda hipotecaria: <input type="number" id="hipoteca"></label>
+      <label>Otras deudas: <input type="number" id="otrasDeudas"></label>
+      <label>Tarjetas de crédito: <input type="number" id="tarjetas"></label>
 
-    <br>
-    <button type="button" onclick="calcularRatios()">Calcular</button>
-  </form>
+      <br>
+      <button type="button" onclick="calcularRatios()">Calcular</button>
+    </form>
 
-  <div id="resultados"></div>
+    <div id="resultados"></div>
+  </div>
 
   <script>
     function calcularRatios() {
@@ -86,11 +115,21 @@
       const patrimonio = activos - pasivos;
       const libertadFinanciera = activosLiquidos / gastos;
       const tasaInversion = (+document.getElementById('inversiones').value / ingreso);
+      const ratioLiquidez = activosLiquidos / pasivos;
 
       function formatRatio(value, ideal, comparison, description) {
         const color = comparison(value, ideal) ? 'good' : 'bad';
         return `<div class="ratio ${color}">${value.toFixed(2)} (Ideal: ${ideal})</div><div class="explanation">${description}</div>`;
       }
+
+      let puntuacion = 0;
+      puntuacion += ahorro >= 0.2 ? 2 : ahorro >= 0.1 ? 1 : 0;
+      puntuacion += dti <= 0.35 ? 2 : dti <= 0.5 ? 1 : 0;
+      puntuacion += activosPasivos >= 2 ? 2 : activosPasivos >= 1 ? 1 : 0;
+      puntuacion += libertadFinanciera >= 6 ? 2 : libertadFinanciera >= 3 ? 1 : 0;
+      puntuacion += tasaInversion >= 0.1 && tasaInversion <= 0.2 ? 2 : tasaInversion >= 0.05 ? 1 : 0;
+
+      const colorNota = puntuacion >= 5 ? 'good' : 'bad';
 
       document.getElementById('resultados').innerHTML = `
         <h2>Resultados</h2>
@@ -107,6 +146,9 @@
         ${formatRatio(libertadFinanciera, 6, (v, i) => v >= i, "Cuántos meses podrías mantener tu nivel de vida actual sin ingresos.")}</p>
         <p><strong>Tasa de inversión</strong> (Ideal 10–20%):
         ${formatRatio(tasaInversion, 0.1, (v, i) => v >= i && v <= 0.2, "Porcentaje de tus ingresos que destinas a invertir para tu futuro.")}</p>
+        <p><strong>Ratio de liquidez</strong> (Ideal >0.5):
+        ${formatRatio(ratioLiquidez, 0.5, (v, i) => v >= i, "Qué parte de tus pasivos puedes cubrir inmediatamente con tus activos líquidos.")}</p>
+        <div class="notaFinal ${colorNota}"><strong>Nota global:</strong> ${puntuacion}/10</div>
       `;
     }
   </script>
